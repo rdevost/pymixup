@@ -13,7 +13,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     keywords="python obfuscate pymixup app",
-    description='An app to obfuscate Python projects.',
+    description='An app to obfuscate Python projects',
     long_description=codecs.open(
         os.path.join(os.path.dirname(__file__), 'README.rst'),
         encoding='utf-8').read(),
@@ -22,7 +22,7 @@ setup(
         'peewee==2.8.1',
         'pyparsing==2.1.4',
     ],
-    url='http://github.com/devost/pymixup',
+    url='http://github.com/rdevost/pymixup',
     classifiers=[
         'Intended Audience :: Developers',
         'Programming Language :: Python',
