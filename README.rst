@@ -82,4 +82,4 @@ How to setup a project is explained `here <docs/setup.rst>`_.
 
 Documentation
 -------------
-Visit the `documentation <http://devost.readthedocs.org>`_ for more information.
+Visit the `documentation <http://pymixup.readthedocs.org>`_ for more information.
