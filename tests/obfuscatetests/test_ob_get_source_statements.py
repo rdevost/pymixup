@@ -1,7 +1,7 @@
 import pytest
 from os.path import join
 import io
-from logic.obfuscate import source_statement_gen
+from logic.obfuscatefile import source_statement_gen
 
 
 def test_get_source_statements(tmpdir):

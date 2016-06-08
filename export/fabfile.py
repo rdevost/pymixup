@@ -6,23 +6,31 @@ from common.settings import obfuscated_dir, exported_dir, project_name, \
     extras_dir
 
 
-def export(platform='default', do_obfuscate='1'):
+def export(platform='default',
+           do_import=False,
+           do_obfuscate=False,
+           do_copy_obfuscated=True):
     """Export obfuscated project for testing or deployment.
 
     Parameters
     ----------
     platform : str
         Destination platform.
-    do_obfuscate : int
+    do_import : bool
+        Run import_project fabfile if True.
+    do_obfuscate : bool
+        Run obfuscate fabfile if True.
+    do_copy_obfuscated : bool
         Copy obfuscated files to EXPORT directory if '1', otherwise copy the
         unobfuscated files to allow testing the unobfuscated project on the
         destination platform. Testing the unobfuscated project on the
         destination assures that the project should run on that platform.
 
-        WARNING: Changing the default of do_obfuscate will put unobfuscated
-        files in your destination EXPORT folder. Do this only if testing on
-        your destination platform is tied to the 'obfuscated' folder. For
-        example, if an iOS Xcode environment builds from 'obfuscated'.
+        WARNING: Changing the default of do_copy_obfuscated will put
+        unobfuscated files in your destination EXPORT folder. Do this only if
+        testing on your destination platform is tied to the 'obfuscated'
+        folder. For example, if an iOS Xcode environment builds from
+        'obfuscated'.
     """
     from_base_dir = join(obfuscated_dir, project_name, platform)
     to_base_dir = join(exported_dir, project_name, platform)
@@ -43,7 +51,7 @@ def export(platform='default', do_obfuscate='1'):
     else:  # default
         extra_paths = []
 
-    if do_obfuscate:
+    if do_copy_obfuscated:
         print('***Exporting obfuscated {}'.format(platform))
     else:
         print('***WARNING: Exporting unobfuscated {}'.format(platform))
@@ -76,7 +84,7 @@ def export(platform='default', do_obfuscate='1'):
             local(' '.join(['rm -r',
                             join(to_base_dir, 'obfuscated', 'tests')]))
         # Then, copy obfuscated files and packages
-        if do_obfuscate:
+        if do_copy_obfuscated:
             local(' '.join(['cp -R',
                             join(from_base_dir, 'obfuscated', '*'), '.']))
         else:
@@ -107,7 +115,7 @@ def export(platform='default', do_obfuscate='1'):
             if platform != 'macosx':
                 local(' '.join(['rm -r', 'platform_api/macosx_api']))
 
-    if do_obfuscate:
+    if do_copy_obfuscated:
         ####################################
         # Save a copy of unobfuscated source
         ####################################

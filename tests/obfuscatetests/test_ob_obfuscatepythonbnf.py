@@ -1,6 +1,6 @@
 import pytest
 from peewee import DoesNotExist
-from logic.obfuscate import ObfuscatePythonBNF
+from logic.obfuscatefile import ObfuscatePythonBNF
 from logic.identifier import get_identifier, save_identifier, \
     get_obfuscated_name, get_identifier_by_name
 from logic.reserved import get_reserved_by_name

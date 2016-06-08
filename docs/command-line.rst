@@ -4,18 +4,11 @@ Command Line Options
 
 The pymixup.py program can be run from the command line. For example, to obfuscate the project specified in **common/settings.py** with all new obfuscated names, enter::
 
-    $ python pymixup.py --rebuild
+    $ python pymixup.py --norebuild
 
 Parameters
 ==========
 All parameters must be preceded by a double dash. Some parameter may use a supplied value (as in the brackets (<>) below).
-
-    **norecurs**
-
-    - Include this parameter to NOT process the base directory recursively. That is, don't process the subdirectories.
-    - Example::
-
-        $ python pymixup.py --norecurs
 
     **platform <platform name>**
 
@@ -26,22 +19,14 @@ All parameters must be preceded by a double dash. Some parameter may use a suppl
 
         $ python pymixup.py --platform android
 
-    **rebuild**
+    **norebuild**
 
-    - Rebuild the identifiers and reserved name tables.
-    - If not specified, existing obfuscated identifiers and reserved names will retain their prior randomized names. New identifiers and reserved names may be be added.
+    - Do not rebuild the identifiers and reserved name tables.
+    - If specified, existing obfuscated identifiers and reserved names will retain their prior randomized names. New identifiers and reserved names may be be added.
+    - Default is to rebuild tables.
     - Example::
 
-        $ python pymixup.py --rebuild
-
-    **addidents**
-
-    - Search for and add new identifiers or reserved names.
-    - If the --rebuild parameter is specified, then this parameter is irrelevant, since the tables will be completely rebuilt.
-    - Use this option when you do not want to keep the prior obfuscated name assignments but have added new names or changed some to reserved.
-    - Example::
-
-        $ python pymixup.py --addidents
+        $ python pymixup.py --norebuild
 
     **verbose**
 
@@ -50,6 +35,14 @@ All parameters must be preceded by a double dash. Some parameter may use a suppl
     - Example::
 
         $ python pymixup.py --verbose
+
+    **doimport**
+
+    - Import source files before obfuscating.
+    - Optional.
+    - Example::
+
+        $ python pymixup.py --doimport
 
 Fabric automated tasks
 ======================

@@ -1,6 +1,6 @@
 from os.path import join
 import io
-from logic.obfuscate import source_line_gen
+from logic.obfuscatefile import source_line_gen
 
 
 def test_read(tmpdir):

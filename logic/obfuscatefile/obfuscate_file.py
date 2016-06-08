@@ -12,7 +12,7 @@ from logic.utilities import obfuscate_path, to_unicode
 
 
 def obfuscate_file(bnf_parser, source_file, from_dir, from_sub_dir, to_dir,
-                   is_verbose=False, is_preprocess=True, is_python=True,
+                   is_verbose=False, is_discovery=True, is_python=True,
                    do_obfuscate=True, platform=None):
     """Obfuscate a file.
 
@@ -22,7 +22,7 @@ def obfuscate_file(bnf_parser, source_file, from_dir, from_sub_dir, to_dir,
     do_obfuscate: bool
     from_dir : str
     from_sub_dir
-    is_preprocess : bool
+    is_discovery : bool
     is_python : bool
     is_verbose : bool
     platform : str
@@ -39,14 +39,14 @@ def obfuscate_file(bnf_parser, source_file, from_dir, from_sub_dir, to_dir,
 
     num_reserved = 0
     num_identifiers = 0
-    if is_preprocess:
+    if is_discovery:
         num_reserved = search_reserveds(None).count()
         num_identifiers = search_identifiers(None).count()
         add_identifiers([source_file[:-3]])
 
     for statement, is_literal_string in source_statement_gen(
             source_file, from_dir, platform=platform):
-        if is_preprocess and not is_literal_string:
+        if is_discovery and not is_literal_string:
             if is_python:
                 # Add reserved attributes to reserveds
                 bnf_parser.attribs.parseString(statement)
@@ -77,7 +77,7 @@ def obfuscate_file(bnf_parser, source_file, from_dir, from_sub_dir, to_dir,
         if not to_file_path and modified_statement != statement and \
                 is_verbose:
             print('----')
-    if is_preprocess:
+    if is_discovery:
         num_reserved_added = search_reserveds(None).count() - num_reserved
         num_identifiers_added = \
             search_identifiers(None).count() - num_identifiers
