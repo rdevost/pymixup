@@ -1,17 +1,17 @@
 ============
 Program Flow
 ============
-*pymixup* will read a Python project and create a corresponding obfuscated project by using the following steps.
+*pymixup* reads a Python project and creates a corresponding obfuscated project by using the following steps.
 
 Initially load the reserved names list
 ======================================
-It executes data/builddb.py to initially populate the **Identifier** (which contains all the names in a project that should be obfuscated plus their obfuscated values) and **Reserved** (which contains all the names that are reserved and should not be obfuscated) tables with names that you specified should not be obfuscated.
+*pymixup* builds a database of all distinct names used in a project. The **Identifier** table contains all the names in a project plus their obfuscated values. The **Reserved** contains all the names that are reserved and should not be obfuscated. These tables are initially populated by a list of names you specify that should not be obfuscated.
 
 Discover all names used in the project
 ======================================
-*pymixup* will read through the project files and finish loading the Identifier and Reserved tables. This is done as follows.
+*pymixup* then reads through the project files and finishes loading the Identifier and Reserved tables. This is done as follows.
 
-1. Examine every non-string and non-comment name in the Python programs and add it to either Reserved or Identifier. Note that this will run repeatedly until no new names are added or moved between tables. This step uses the following logic::
+1. Examine every non-string and non-comment name in the Python programs and add it to the Reserved and Identifier tables. This step uses the following logic::
 
     if the name is a reserved name
     or is imported from a reserved package
@@ -24,13 +24,13 @@ Discover all names used in the project
     else
         obfuscate it and add it to Identifier
 
-2. Each name is obfuscated by assigning it a randomly-generated name based on the allowed letters to use (specified in ALPHABET in logic/randomizename.py) and a name length (specified when calling the randomizer in logic/identifier.py). The length of obfuscated words and what characters are allowed for them can be changed there.
-3. Every file and folder name that is not reserved will be obfuscated as well.
+2. Each name is obfuscated by assigning it a randomly-generated name based on allowed letters (specified in ALPHABET in logic/randomizename.py) and a name length (specified when calling the randomizer in logic/identifier.py). The length of obfuscated words and what characters are allowed for them can be changed there.
+3. File and folder names that are not reserved are also obfuscated.
 
 Obfuscate the project
 =====================
-After discovering all the names used in a project, *pymixup* will read through the project files again and create obfuscated versions based on the generated Identifier table (from above).
+After discovering all the names used in a project (which may require reading through the project files a few times), *pymixup* reads through the project files again and creates obfuscated versions using the Identifier table (from above). The obfuscated source files have:
 
-1. Comments and doc strings will be stripped out of the obfuscated files.
-2. Line breaks will be removed, so that each python statement will be on a single line, regardless of its length.
-3. Each name defined in Identifier (above) will be replaced with its obfuscated counterpart.
+1. Comments and doc strings removed.
+2. Line breaks in Python statements removed, so each statement will be on a single line, regardless of its length.
+3. Names changed to their obfuscated values.

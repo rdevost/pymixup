@@ -24,7 +24,7 @@ reserved_prefixes = ReservedPrefixes('/', '~', '#', '=')
 
 
 class Reserved(BaseModel):
-    """ORM for a name."""
+    """ORM for a reserved name."""
     import datetime
     id = pwe.PrimaryKeyField()
     name = pwe.CharField(default=u'', index=True, unique=True)

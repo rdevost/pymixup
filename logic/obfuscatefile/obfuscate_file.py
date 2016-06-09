@@ -1,12 +1,12 @@
 from __future__ import print_function
+from distutils.dir_util import mkpath
 from io import open
 from os.path import join, split, isdir
-from distutils.dir_util import mkpath
-from logic.coroutine import coroutine
-import sys
 import re
+import sys
 
-from logic.identifier import search_identifiers, add_identifiers
+from logic.coroutine import coroutine
+from logic.identifier import add_identifiers, search_identifiers
 from logic.reserved import search_reserveds
 from logic.utilities import obfuscate_path, to_unicode
 

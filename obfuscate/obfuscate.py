@@ -1,17 +1,17 @@
 from __future__ import print_function, with_statement
-from os.path import join, isdir
 from distutils.dir_util import mkpath
-from time import time, ctime
+from os.path import join, isdir
+from time import ctime, time
 
-from fabric.api import local, settings, lcd
+from fabric.api import lcd, local, settings
 
 from common.settings import imported_dir, project_name, obfuscated_dir
 from data.builddb import build_db
-from import_project.fabfile import import_proj
-from logic.obfuscatefile import ObfuscatePythonBNF, ObfuscateKivyBNF, \
-    obfuscate_file
-from logic.reserved import search_reserveds
+from import_project import import_proj
 from logic.identifier import get_obfuscated_name, search_identifiers
+from logic.obfuscatefile import obfuscate_file, ObfuscateKivyBNF, \
+    ObfuscatePythonBNF
+from logic.reserved import search_reserveds
 from logic.utilities import file_gen, obfuscate_path
 
 
@@ -28,9 +28,6 @@ skip_files = [
     ]
 
 
-#####################
-# Obfuscate a project
-#####################
 def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
               do_import=False):
     """Obfuscate a python project.
@@ -60,12 +57,18 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
 
     do_import : bool
         Import source if True.
+
+    Returns
+    -------
+    True if successfully completed.
     """
     start_time = time()
-    print('***PYMIXUP started at {}'.format(ctime(start_time)))
+    print('***OBFUSCATE started at {}'.format(ctime(start_time)))
 
     if do_import:
-        import_proj()
+        if not import_proj():
+            print('### Import called but failed. Obfuscate canceled. ###')
+            return
 
     # Setup directories
     from_dir = join(imported_dir, project_name, 'to_obfuscate')
@@ -99,8 +102,9 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
                 num_reserved = search_reserveds(None).count()
                 num_identifiers = search_identifiers(None).count()
 
-            print('***PREPROCESSING***' if is_discovery
-                  else '***OBFUSCATING***')
+            print('***Discovery --> starting pass {} ***'.format(str(num_runs))
+                  if is_discovery
+                  else '***Obfuscating --> starting obfuscating pass ***')
             for file_name, dir_name, is_reserved_dir, is_reserved_file, \
                     do_obfuscate in file_gen(from_dir):
                 if len(dir_name) > len(from_dir):
@@ -130,7 +134,7 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
                                    is_python=file_name[-3:] == '.py',
                                    do_obfuscate=do_obfuscate,
                                    platform=platform)
-                    print('obfuscated')
+                    print('discovered' if is_discovery else 'obfuscated')
                 else:
                     if not is_discovery:
                         if is_reserved_dir:
@@ -157,13 +161,15 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
                     search_reserveds(None).count() - num_reserved
                 num_identifiers_added = \
                     search_identifiers(None).count() - num_identifiers
-                if not (num_reserved_added or num_identifiers_added):
-                    is_discovery = False
-                print('===> Run number {}: Added {} reserved, {} identifiers'.
+                print('===> Discovery pass number {}: Added {} reserved, '
+                      '{} identifiers'.
                       format(str(num_runs), str(num_reserved_added),
                              str(num_identifiers_added)))
+                if not (num_reserved_added or num_identifiers_added):
+                    is_discovery = False
             else:
-                print('===> Finished. Run number {}: '.
+                print('===> Finished obfuscating. '
+                      'Total number of passes: {} '.
                       format(str(num_runs)))
                 # Copy unobfuscated source
                 print('===> Copying unobfuscated source.')
@@ -188,9 +194,10 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
 
     end_time = time()
     elapsed_minutes, elapsed_seconds = divmod(end_time - start_time, 60)
-    print('***PYMIXUP ended at {}'.format(ctime(end_time)))
+    print('***OBFUSCATE ended at {}'.format(ctime(end_time)))
     print('===> Elapsed time: {} minutes, {} seconds'.format(
         int(elapsed_minutes), int(elapsed_seconds)))
+    return True
 
 
 def clear_source(to_dir, db_dir, is_rebuild=True):

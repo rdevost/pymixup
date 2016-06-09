@@ -1,8 +1,8 @@
-from pyparsing import Literal, Optional, ZeroOrMore
 from peewee import DoesNotExist
+from pyparsing import Literal, Optional, ZeroOrMore
 
 from logic.obfuscatefile import ObfuscateBNF
-from logic.reserved import get_reserved_by_name, add_reserveds
+from logic.reserved import add_reserveds, get_reserved_by_name
 from logic.utilities import obfuscate_path
 
 

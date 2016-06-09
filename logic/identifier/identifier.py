@@ -3,7 +3,7 @@ import datetime
 import peewee as pwe
 
 from data.base import BaseModel, validate
-from logic.randomize import base_random_number, base_alphabet_encode
+from logic.randomize import base_alphabet_encode, base_random_number
 from logic.reserved import get_reserved_by_name
 
 

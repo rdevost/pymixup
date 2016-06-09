@@ -1,9 +1,12 @@
 from __future__ import with_statement
 from fabric.api import local, settings, lcd
 from os.path import join
+from time import ctime, time
 
-from common.settings import obfuscated_dir, exported_dir, project_name, \
-    extras_dir
+from common.settings import exported_dir, extras_dir, obfuscated_dir, \
+    project_name
+from import_project import import_proj
+from obfuscate import obfuscate
 
 
 def export(platform='default',
@@ -14,14 +17,8 @@ def export(platform='default',
 
     Parameters
     ----------
-    platform : str
-        Destination platform.
-    do_import : bool
-        Run import_project fabfile if True.
-    do_obfuscate : bool
-        Run obfuscate fabfile if True.
     do_copy_obfuscated : bool
-        Copy obfuscated files to EXPORT directory if '1', otherwise copy the
+        Copy obfuscated files to EXPORT directory if True, otherwise copy the
         unobfuscated files to allow testing the unobfuscated project on the
         destination platform. Testing the unobfuscated project on the
         destination assures that the project should run on that platform.
@@ -31,9 +28,29 @@ def export(platform='default',
         testing on your destination platform is tied to the 'obfuscated'
         folder. For example, if an iOS Xcode environment builds from
         'obfuscated'.
+    do_import : bool
+        Run import_project fabfile if True.
+    do_obfuscate : bool
+        Run obfuscate fabfile if True.
+    platform : str
+        Destination platform.
+
+    Returns
+    -------
+    True if successfully completed.
     """
+    print('***EXPORT started at {}'.format(ctime(time())))
     from_base_dir = join(obfuscated_dir, project_name, platform)
     to_base_dir = join(exported_dir, project_name, platform)
+
+    if do_import:
+        if not import_proj():
+            print('### Import called but failed. Export canceled. ###')
+            return
+    if do_obfuscate:
+        if not obfuscate(platform=platform):
+            print('### Obfuscate called but failed. Export canceled. ###')
+            return
 
     if platform is 'android':
         extra_paths = [
@@ -69,10 +86,10 @@ def export(platform='default',
     local(' '.join(['mkdir', join(to_base_dir, 'unobfuscated')]))
     local(' '.join(['mkdir', join(to_base_dir, 'db')]))
 
+    #############################
+    # Setup an obfuscated project
+    #############################
     with lcd(join(to_base_dir, 'obfuscated')):
-        #########################################################
-        # Copy development project files to destination obfuscate
-        #########################################################
         # First, copy needed unobfuscated files and folders
         local(' '.join(['cp -R', join(from_base_dir,
                                       'unobfuscated',
@@ -91,22 +108,18 @@ def export(platform='default',
             local(' '.join(['cp -R',
                             join(from_base_dir, 'unobfuscated',
                                  'to_obfuscate', '*'), '.']))
-
-        #############
+        #
         # Copy extras
-        #############
-        # Copy common folders
+        #
         for extra_path in extra_paths:
             local(' '.join(['cp -R', join(extras_dir,
                                           extra_path), '.']))
-
-        ########################
+        #
         # Remove other platforms
-        ########################
         # Note: This assumes the project has a platform_api folder with
         #       specific api calls to that platform.
         #       Remove or disregard this block if that is not the case.
-        ########################
+        #
         with settings(warn_only=True):
             if platform != 'android':
                 local(' '.join(['rm -r', 'platform_api/android_api']))
@@ -115,21 +128,42 @@ def export(platform='default',
             if platform != 'macosx':
                 local(' '.join(['rm -r', 'platform_api/macosx_api']))
 
-    if do_copy_obfuscated:
-        ####################################
-        # Save a copy of unobfuscated source
-        ####################################
-        with lcd(join(to_base_dir, 'unobfuscated')):
-            local(' '.join(['cp -R',
-                            join(from_base_dir, 'unobfuscated',
-                                 'to_obfuscate', '*'), '.']))
-            local(' '.join(['cp -R',
-                            join(from_base_dir, 'unobfuscated',
-                                 'to_not_obfuscate', '*'), '.']))
+    ###############################
+    # Setup an unobfuscated project
+    ###############################
+    with lcd(join(to_base_dir, 'unobfuscated')):
+        local(' '.join(['cp -R',
+                        join(from_base_dir, 'unobfuscated',
+                             'to_obfuscate', '*'), '.']))
+        local(' '.join(['cp -R',
+                        join(from_base_dir, 'unobfuscated',
+                             'to_not_obfuscate', '*'), '.']))
+        #
+        # Copy extras
+        #
+        for extra_path in extra_paths:
+            local(' '.join(['cp -R', join(extras_dir,
+                                          extra_path), '.']))
+        #
+        # Remove other platforms
+        # Note: This assumes the project has a platform_api folder with
+        #       specific api calls to that platform.
+        #       Remove or disregard this block if that is not the case.
+        #
+        with settings(warn_only=True):
+            if platform != 'android':
+                local(' '.join(['rm -r', 'platform_api/android_api']))
+            if platform != 'ios':
+                local(' '.join(['rm -r', 'platform_api/ios_api']))
+            if platform != 'macosx':
+                local(' '.join(['rm -r', 'platform_api/macosx_api']))
 
-        ###################
-        # Copy obfuscate db
-        ###################
-        with lcd(join(to_base_dir, 'db')):
-            local(' '.join(['cp -R', join(
-                join(from_base_dir, 'db'), '*'), '.']))
+    ##########################
+    # Save a copy obfuscate db
+    ##########################
+    with lcd(join(to_base_dir, 'db')):
+        local(' '.join(['cp -R', join(
+            join(from_base_dir, 'db'), '*'), '.']))
+
+    print('***EXPORT ended at {}'.format(ctime(time())))
+    return True

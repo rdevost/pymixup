@@ -6,6 +6,8 @@ The pymixup.py program can be run from the command line. For example, to obfusca
 
     $ python pymixup.py --norebuild
 
+However, fabric files have been setup to automate a lot of the file copying. See :doc:`steps` for details on running the fabric files.
+
 Parameters
 ==========
 All parameters must be preceded by a double dash. Some parameter may use a supplied value (as in the brackets (<>) below).
@@ -46,4 +48,4 @@ All parameters must be preceded by a double dash. Some parameter may use a suppl
 
 Fabric automated tasks
 ======================
-The import, export, and deploy tasks are automated using Fabric. See :doc:`steps` for a description of their use.
+The import, obfuscate, export, and deploy tasks are automated using Fabric. See :doc:`steps` for a description of their use.

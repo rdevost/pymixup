@@ -7,6 +7,7 @@ from logic.reserved.reserved import Reserved
 
 
 def search_reserveds(search_text, **kwargs):
+    """Search the Reserved table."""
     is_first = True
     where_clause = None
     if search_text:

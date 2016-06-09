@@ -1,13 +1,13 @@
+from collections import defaultdict
+from functools import wraps
 import logging
 from os import environ
 from os.path import join, isdir
-from collections import defaultdict
-from functools import wraps
 
 from fabric.api import local
 import peewee as pwe
 
-from common.settings import project_name, obfuscated_dir
+from common.settings import obfuscated_dir, project_name
 
 
 logging.debug('data.base: Starting')

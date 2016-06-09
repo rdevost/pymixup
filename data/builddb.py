@@ -1,13 +1,14 @@
-from logging import getLogger
-from os.path import join, exists
-from os import mkdir
 import keyword
-import sqlite3
+from logging import getLogger
+from os import mkdir
+from os.path import join, exists
+
 import peewee as pwe
 import pyparsing
+import sqlite3
 
-from logic.reserved import Reserved, add_reserveds, reserved_prefixes
-from logic.identifier import Identifier, add_identifiers
+from logic.reserved import add_reserveds, Reserved, reserved_prefixes
+from logic.identifier import add_identifiers, Identifier
 
 logger = getLogger(__name__)
 

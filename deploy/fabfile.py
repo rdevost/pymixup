@@ -1,8 +1,9 @@
 from __future__ import with_statement
-from fabric.api import local, settings, lcd
+from fabric.api import lcd, local, settings
 from os.path import join, isdir
+from time import ctime, time
 
-from common.settings import exported_dir, project_name, deployed_dir
+from common.settings import deployed_dir, exported_dir, project_name
 
 try:
     input = raw_input  # For python 2.x
@@ -23,6 +24,7 @@ def save_deployed(platform='default'):
     platform : str
         Destination platform.
     """
+    print('***DEPLOY started at {}'.format(ctime(time())))
     version_num = input(
         'Version number to save to. Don\'t use parens, like 1.2(a). '
         'Use just numbers, letters, and dots, like: 1.2.4a.: ')
@@ -65,3 +67,6 @@ def save_deployed(platform='default'):
     # Copy db
     with lcd(join(to_base_dir, 'db')):
         local(' '.join(['cp -R', join(from_base_dir, 'db', '*'), '.']))
+
+    print('***DEPLOY ended at {}'.format(ctime(time())))
+    return True

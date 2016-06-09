@@ -6,6 +6,7 @@ from logic.reserved import reserved_prefixes
 
 
 def save_reserved(reserved_row, **kwargs):
+    """Save a Reserved row."""
     from logic.identifier import get_identifier_by_name, \
         get_identifier_by_obfuscated, save_identifier, get_identifier
     try:

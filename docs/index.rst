@@ -6,8 +6,7 @@
 ===================================
 Welcome to pymixup's documentation!
 ===================================
-*pymixup* is a Python project obfuscator. It takes Python code that looks like
-this::
+*pymixup* is a Python project obfuscator. It takes Python code that looks like this::
 
    def mk_formatted_array_string(number_array, decimal='.', separator=',',
                                  is_sort_array=False,
@@ -17,12 +16,12 @@ this::
 
        Parameters
        ----------
-       decimal
-       is_sort_array
-       is_strip_unused_decimals
-       joiner
-       number_array
-       separator
+       decimal : str
+       is_sort_array : bool
+       is_strip_unused_decimals : bool
+       joiner : str
+       number_array : np.array
+       separator : str
        """
        try:
            if is_sort_array:
@@ -58,15 +57,15 @@ and turns it into this::
 
 Why Obfuscate?
 ==============
-Python is a great interpreted language. Its syntax makes the source code easy to read and understand. The compiled .pyc byte code can be decompiled and also made easy to read.
+Python is a great interpreted language. Its syntax allows us to write elegant easy-to-read code.
 
-For most programs, there is no reason to deliberately make programs hard to read and understand, but there are exceptions. For example, if you are charging for an app that is installed on a mobile phone, then you do not want competitors to copy your code and resell your app at a lower cost.
+But sometimes you may not want your code to easy to understand. For example, if you are charging for an app that is installed on a mobile phone, then you do not want competitors to copy your code and resell your app at a lower cost. Even if you distribute just the compiled .pyc byte code, it can be decompiled and made readable.
 
 In this case, it's sensible to make the program as hard as possible for someone else to copy and edit. That's the work of obfuscation.
 
-Because of its interpreted nature, there are limits to how much a Python program can be obfuscated, since the program must still be understood by the interpreter. For example, Python reserved words like "if" and "class" cannot be changed, or Python won't be able to understand them. However, variables and method names you create can be changed--as long as the changes are duplicated throughout the source files.
+Because of its interpreted nature, there are limits to how much a Python program can be obfuscated, since the program must still be understood by the interpreter. For example, Python keywords like "if" and "class" cannot be changed, or Python won't be able to understand them. However, variables and method names you create can be changed--as long as the changes are duplicated throughout the source files.
 
-That's what *pymixup* does. It obfuscates non-reserved words into garbled words of random text to make the program harder to understand and follow.
+That's what *pymixup* does. It obfuscates non-reserved words (e.g., words that are not keywords) into garbled words of random characters to make the program harder to understand and follow.
 
 **CAVEAT**: The obfuscated code can be reverse engineered by deciphering what an obfuscated variable or method does and renaming the garbled term to a meaningful one. That's a potentially labor-intensive process that hopefully discourages those who want to steal your code from attempting it.
 

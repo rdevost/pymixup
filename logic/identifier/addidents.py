@@ -1,8 +1,8 @@
 from peewee import IntegrityError, DoesNotExist
 
-from logic.identifier import save_identifier, get_identifier, \
-    get_identifier_by_name
 from logic.reserved import get_reserved_by_name
+from logic.identifier import get_identifier, get_identifier_by_name, \
+    save_identifier
 
 
 def add_identifiers(identifier_list=None, do_obfuscate=True):

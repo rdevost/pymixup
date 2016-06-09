@@ -4,6 +4,14 @@ from logic.reserved import get_reserved, save_reserved
 
 
 def add_reserveds(package_name, reserved_list, name_prefix=''):
+    """Add reserved names to Reserved table.
+
+    Parameters
+    ----------
+    name_prefix : str
+    package_name : str
+    reserved_list : list
+    """
     # Add package name as a module reserved name
     try:
         reserved_row = get_reserved(None)

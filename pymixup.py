@@ -4,9 +4,6 @@ import argparse
 from obfuscate import obfuscate
 
 
-#####################
-# Obfuscate a project
-#####################
 def main():
     """Obfuscate a python project.
 

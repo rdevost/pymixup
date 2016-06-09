@@ -1,2 +1,2 @@
-from randomizename import base_alphabet_decode, base_alphabet_encode, \
-    base_random_number, ALPHABET, set_random_seed
+from randomizename import ALPHABET, base_alphabet_decode, \
+    base_alphabet_encode, base_random_number, set_random_seed

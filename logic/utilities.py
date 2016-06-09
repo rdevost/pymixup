@@ -1,10 +1,11 @@
 from os import walk, sep
 from os.path import basename, normpath, join
+
 from peewee import DoesNotExist
 
-from logic.reserved import get_reserved_by_name, add_reserveds, \
-    reserved_prefixes
 from logic.identifier import add_identifiers
+from logic.reserved import add_reserveds, get_reserved_by_name, \
+    reserved_prefixes
 
 
 def file_gen(from_dir, do_recursive=True, file_name=None):
@@ -129,20 +130,6 @@ def file_gen(from_dir, do_recursive=True, file_name=None):
                 do_obfuscate
 
 
-def split_path(file_path):
-    """Split a path into its parts.
-
-    Parameters
-    ----------
-    file_path : str
-
-    Returns
-    -------
-    path : list
-    """
-    return normpath(file_path).split(sep)
-
-
 def obfuscate_path(file_path):
     """Create an obfuscated path name.
 
@@ -166,22 +153,18 @@ def obfuscate_path(file_path):
     return join(*obf_path)
 
 
-def to_unicode(unicode_or_string):
-    """Convert a string to unicode.
+def split_path(file_path):
+    """Split a path into its parts.
 
     Parameters
     ----------
-    unicode_or_string : str  # or unicode
+    file_path : str
 
     Returns
     -------
-    value : unicode
+    path : list
     """
-    if isinstance(unicode_or_string, str):
-        value = unicode_or_string.decode('utf-8')
-    else:
-        value = unicode_or_string
-    return value
+    return normpath(file_path).split(sep)
 
 
 def to_str(unicode_or_str):
@@ -199,4 +182,22 @@ def to_str(unicode_or_str):
         value = unicode_or_str.encode('utf-8')
     else:
         value = unicode_or_str
+    return value
+
+
+def to_unicode(unicode_or_string):
+    """Convert a string to unicode.
+
+    Parameters
+    ----------
+    unicode_or_string : str  # or unicode
+
+    Returns
+    -------
+    value : unicode
+    """
+    if isinstance(unicode_or_string, str):
+        value = unicode_or_string.decode('utf-8')
+    else:
+        value = unicode_or_string
     return value

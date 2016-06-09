@@ -1,11 +1,11 @@
 import abc
 
-from pyparsing import Literal, Word, Combine, Optional, ZeroOrMore, nums, \
-    alphas, alphanums, OneOrMore, QuotedString, pythonStyleComment, oneOf
+from pyparsing import alphanums, alphas, Combine, Literal, nums, oneOf, \
+    OneOrMore, Optional, pythonStyleComment, QuotedString, Word, ZeroOrMore
 from peewee import DoesNotExist
 
 from logic.identifier import add_identifiers
-from logic.reserved import get_reserved_by_name, add_reserveds
+from logic.reserved import add_reserveds, get_reserved_by_name
 
 
 class ObfuscateBNF(object):

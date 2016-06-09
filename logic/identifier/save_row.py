@@ -1,6 +1,7 @@
+from peewee import IntegrityError, DoesNotExist
+
 from data.base import obfuscatedb
 from data.save_row import save_row
-from peewee import IntegrityError, DoesNotExist
 
 
 def save_identifier(identifier_row, **kwargs):
