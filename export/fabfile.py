@@ -6,13 +6,15 @@ from time import ctime, time
 from common.settings import exported_dir, extras_dir, obfuscated_dir, \
     project_name
 from import_project import import_proj
-from obfuscate import obfuscate
+from obfuscate import obfuscate_proj
 
 
-def export(platform='default',
-           do_import=False,
-           do_obfuscate=False,
-           do_copy_obfuscated=True):
+def export_proj(platform='default',
+                do_obfuscate=False,
+                do_import=False,
+                do_rebuild=True,
+                is_verbose=True,
+                do_copy_obfuscated=True):
     """Export obfuscated project for testing or deployment.
 
     Parameters
@@ -32,6 +34,10 @@ def export(platform='default',
         Run import_project fabfile if True.
     do_obfuscate : bool
         Run obfuscate fabfile if True.
+    do_rebuild : bool
+        Rebuild the Reserved and Identifier tables if True.
+    is_verbose: bool
+        Print verbose messages.
     platform : str
         Destination platform.
 
@@ -43,12 +49,9 @@ def export(platform='default',
     from_base_dir = join(obfuscated_dir, project_name, platform)
     to_base_dir = join(exported_dir, project_name, platform)
 
-    if do_import:
-        if not import_proj():
-            print('### Import called but failed. Export canceled. ###')
-            return
     if do_obfuscate:
-        if not obfuscate(platform=platform):
+        if not obfuscate_proj(platform=platform, do_rebuild=do_rebuild,
+                              is_verbose=is_verbose, do_import=do_import):
             print('### Obfuscate called but failed. Export canceled. ###')
             return
 

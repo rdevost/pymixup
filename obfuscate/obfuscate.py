@@ -28,8 +28,7 @@ skip_files = [
     ]
 
 
-def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
-              do_import=False):
+def obfuscate(platform='default', do_rebuild=True, is_verbose=True):
     """Obfuscate a python project.
 
     Create a project in the OBFUSCATED directory for the destination platform.
@@ -47,7 +46,7 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
     platform : str
         The destination platform.
 
-    is_rebuild : bool
+    do_rebuild : bool
         Don't rebuild the dictionary. That is, keep all the previously
         assigned variable names, but check for new names and changes in
         reserved names. The default is to rebuild the dictionary.
@@ -55,20 +54,12 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
     is_verbose : bool
         Print verbose messages.
 
-    do_import : bool
-        Import source if True.
-
     Returns
     -------
     True if successfully completed.
     """
     start_time = time()
     print('***OBFUSCATE started at {}'.format(ctime(start_time)))
-
-    if do_import:
-        if not import_proj():
-            print('### Import called but failed. Obfuscate canceled. ###')
-            return
 
     # Setup directories
     from_dir = join(imported_dir, project_name, 'to_obfuscate')
@@ -79,7 +70,7 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
     db_dir = join(obfuscated_dir, project_name, 'db')
 
     # Create/clear the obfuscated folders and db
-    clear_source(to_dir, db_dir, is_rebuild=is_rebuild)
+    clear_source(to_dir, db_dir, do_rebuild=do_rebuild)
 
     # Add/refresh reserved names
     build_db(db_dir)
@@ -200,17 +191,17 @@ def obfuscate(platform='default', is_rebuild=True, is_verbose=True,
     return True
 
 
-def clear_source(to_dir, db_dir, is_rebuild=True):
+def clear_source(to_dir, db_dir, do_rebuild=True):
     """Clear obfuscate destination folders.
 
     Parameters
     ----------
     to_dir : str
     db_dir : str
-    is_rebuild : bool
+    do_rebuild : bool
     """
     with settings(warn_only=True):
-        if is_rebuild:
+        if do_rebuild:
             with settings(warn_only=True):
                 local(' '.join(['rm -r', to_dir]))
                 local(' '.join(['rm -r', db_dir]))

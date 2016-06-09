@@ -13,61 +13,142 @@ Setup the project
 =================
 Perform the setup steps described in :doc:`setup` to prepare the project.
 
-Obfuscate the code
-==================
-Run the following two steps to create obfuscate your code. See :doc:`command-line` for run options.
+Use Fabric tasks to facilitate the steps
+========================================
+These Fabric tasks have been set up (they're described below):
 
-1. Run **import_project/fabfile/import_proj()** to copy the source from <MyProject> into **IMPORTED/<MyProject>/project**. (This must be done every time a source code change is made in your project.)
+    - **import_proj** in the file *import_project/fabfile.py*
+    - **obfuscate_proj** in the file *obfuscate/fabfile.py*
+    - **export_proj** in the file *export/fabfile.py*
+    - **save_deployed** in the file *deploy/fabfile.py*
 
-    For example::
+A Fabric task is run like this::
 
-        $ fab --fabfile=import_project/fabfile.py import_proj
+    fab --fabfile=<relative path to fabfile> <method to run>:<parm1>=<value1>,<parm2>=<value2>,...
 
-2. Run **obfuscate/fabfile/obfuscate()** (or **pymixup.py** from the command line) to obfuscate the source project. This will:
+For example, to run the **export_proj** method in the fabric file **export/fabfile.py** with parameter **platform** set to "android" and the parameter **do_obfuscate** set to True::
+
+    fab --fabfile=export/fabfile.py export_proj:platform=android,do_import=True
+
+Import a development project
+============================
+The import task copies files from your development project into the folders *pymixup* uses to obfuscate.
+
+This task copies the source from <MyProject> into **IMPORTED/<MyProject>**. It must be run every time a source code change is made in your project::
+
+    $ fab --fabfile=import_project/fabfile.py import_proj
+
+Obfuscate the project
+=====================
+The obfuscate task obfuscates the source code. This will:
 
     - Discover all names used in the project and assign them obfuscated values. These will be stored in an SQLite database.
     - Obfuscate the source and write it to the folder **OBFUSCATED/<MyProject>/<platform>/obfuscated**.
-    - Copy the unobfuscated source to **OBFUSCATED/<MyProject>/<platform>/unobfuscated**.
+    - Put a copy of the unobfuscated source in **OBFUSCATED/<MyProject>/<platform>/unobfuscated**.
     - Save a copy of the names database in **OBFUSCATED/<MyProject>/obfuscated/<platform>/db**.
 
     For more information on the directories, see :doc:`folder-structure`.
 
-    For example, to obfuscate for the Android platform with a complete rebuild of the Identifier dictionary::
+---------------
+Task parameters
+---------------
+    **platform**
+        - A string for the destination platform. For example, "android" or "ios".
+        - This will be used to apply the platform directives.
+        - If no platform is specified, "default" will be used.
 
-        $ fab --fabfile=obfuscate/fabfile.py obfuscate:platform=android
+    **do_rebuild**
+        - Rebuild the identifiers and reserved name tables. Can be "True" or "False".
+        - If set to False, existing obfuscated identifiers and reserved names will retain their prior randomized names. New identifiers and reserved names may be be added.
+        - Default is to rebuild tables.
 
-    or, alternatively::
+    **is_verbose**
+        - Print verbose messages. Can be "True" or "False".
+        - Default is to print verbose messages.
 
-        $ python pymixup.py --platform android
+    **do_import**
+        - Run the **import_proj** task before obfuscating. Can be "True" or "False".
+        - Default is False.
 
-    NOTE: If no --platform parameter is given, then the project will be copied into a folder called "default".
+--------
+Examples
+--------
+   To obfuscate with all the defaults::
 
-    The **obfuscate** fabric file can also run the **import_project** step beforehand by using a **do_import** parameter::
+        $ fab --fabfile=obfuscate/fabfile.py obfuscate_proj
 
-        $ fab --fabfile=obfuscate/fabfile.py obfuscate:platform=android,do_import=True
+   To obfuscate for the Android platform while retaining the existing Identifier dictionary (that is, not rebuilding the dictionary from scratch)::
+
+        $ fab --fabfile=obfuscate/fabfile.py obfuscate_proj:platform=android,do_rebuild=False
+
+    Use the **do_import** parameter to run the **import_project** step beforehand::
+
+        $ fab --fabfile=obfuscate/fabfile.py obfuscate_proj:do_import=True
 
 Export and test in your development platform
 ============================================
 Part of setting up the project is to identify all the files, directories, and modules needed on the destination platform to run your project. Test this collection of files to make sure that everything needed has been identified.
 
-1. Run **export/fabfile.py/deploy()** to create full obfuscated and unobfuscated projects in **EXPORTED/<MyProject>/<platform>**.
-2. Run the unit tests for the unobfuscated project.
-3. After successfully completing the unobfuscated unit tests, run the unit test for the obfuscated project. These tests are the most valuable resource to discover names that were obfuscated that should not have been.
+Run the **export_proj** task to collect all the obfuscated code and other resources and copy them to the destination platform.
+
+---------------
+Task parameters
+---------------
+    **platform**
+        - A string for the destination platform. For example, "android" or "ios".
+        - This will be used to apply the platform directives.
+        - If no platform is specified, "default" will be used.
+
+    **do_obfuscate**
+        - Run the **obfuscate_proj** task before exporting. Can be "True" or "False".
+        - Defaults to False.
+
+    **do_import**
+        - Run the **import_proj** task before running the **do_obfuscate** task. Can be "True" or "False".
+        - This parameter is disregarded if **do_obfuscate** is False.
+        - Defaults to False.
+
+    **do_rebuild**
+        - Rebuild the Reserved and Identifier tables if when obfuscating.
+        - This parameter is disregarded if **do_obfuscate** is False.
+        - Defaults to True.
+
+    **is_verbose**
+        - Print verbose messages while obfuscating.
+        - This parameter is disregarded if **do_obfuscate** is False.
+        - Defaults to True.
+
+    **do_copy_obfuscated**
+        - Create an obfuscated project in the EXPORTED/obfuscated directory.
+        - If set to false, an unobfuscated project will be created there.
+        - This could be helpful if the destination platform is configured to use only one directory. For example, if an iOS Xcode environment is setup to rebuild when it discovers changes in .../EXPORTED/obfuscated, then set **do_copy_obfuscated** to False to test unobfuscated code on iOS devices.
+        - WARNING: Set this to False only for special cases. Then re-export your project with the default of True.
+        - Default is True (export the obfuscated project).
+
+
+-----
+Steps
+-----
+    1. Run the **export_proj** task to create full obfuscated and unobfuscated projects in **EXPORTED/<MyProject>/<platform>**.
+    2. Run the unit tests in the unobfuscated project folder EXPORTED/<MyProject>/<platform>/unobfuscated.
+    3. After successfully completing the unobfuscated unit tests, run the unit test in the obfuscated folder. These tests are the most valuable resource to discover names that were obfuscated that should not have been.
 
     For example, to export for the Android platform::
 
-        $ fab --fabfile=export/fabfile.py export:platform=android
+        $ fab --fabfile=export/fabfile.py export_proj:platform=android
 
-    The **export** fabric file can also run the **import_project** and **obfuscate** steps beforehand by using the **do_import** and **do_obfuscate** parameters::
+    Use the **do_import** and **do_obfuscate** parameters to run the **import_project** and **obfuscate_proj** tasks beforehand::
 
-        $ fab --fabfile=export/fabfile.py export:platform=android,do_import=True,do_obfuscate=True
+        $ fab --fabfile=export/fabfile.py export_proj:platform=android,do_obfuscate=True,do_import=True
 
 Export and test on the destination platform
 ===========================================
-1. Copy and test the **unobfuscated** project on the destination platform.
-    Note that you can use export/fabfile/deploy(do_copy_obfuscated=False) to create an unobfuscated project in the EXPORTED/obfuscated directory. This could be helpful if the destination platform is configured to use only one directory. For example, if an iOS Xcode environment is setup to rebuild when it discovers changes in .../EXPORTED/obfuscated, you can use the do_copy_obfuscated=False to test unobfuscated code on iOS devices.
-2. Copy and test the **obfuscated** project on the destination platform.
-3. If the unobfuscated build works, but the obfuscated does not, it is very likely due to a keyword that was obfuscated that should not have been. Often, the traceback will tell you which name is at fault.
+Once testing is successful for the obfuscated project on the development platform, copy it into the destination platform and test it there.
+
+1. Copy and test the unobfuscated project on the destination platform.
+2. Copy and test the obfuscated project on the destination platform.
+
+NOTE: If the unobfuscated build works, but the obfuscated does not, it is very likely due to a keyword that was obfuscated that should not have been. Often, the traceback will tell you which name is at fault.
 
 Deploy the obfuscated project
 =============================

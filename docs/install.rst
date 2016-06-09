@@ -21,11 +21,21 @@ Requirements
 
 Installation
 ============
-pip ...
+*pymixup* should be installed in a development folder that you can edit. That is, it should not be installed in Python's site-packages directory. If you use virtual environments (in directory ~/virtualenv), an install in Unix could look like this::
 
-If running pytest from the command line, then set an environment variable IS_PYMIXUP_TEST=1 for the tests. For example, in Linux::
+    $ cd ~/virtualenv
+    $ virtualenv pymixup
+    $ pip install fabric pyparsing peewee pytest
+    $ source pymixup/bin/activate
+    $ cd ~/projects
+    $ git clone git://github.com/rdevost/pymixup
+
+Run pytests
+===========
+To running pytest from the command line, first set an environment variable IS_PYMIXUP_TEST=1. For example, in Unix::
 
     export IS_PYMIXUP_TEST=1
+    cd pymixup
     py.test
 
 This environment variable is used to determine whether to use the live on-disk database Reserved and Identifier tables or set up temporary testing in-memory ones.
